@@ -20,7 +20,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           java-version: "8"
-          distribution: microsoft
+          distribution: temurin
           cache: gradle
 
       - name: Build 🚚
