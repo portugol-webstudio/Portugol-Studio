@@ -30,9 +30,12 @@ jobs:
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
+      - name: Compress Artifacts 🗜️
+        run: tar -cf console/build/console.tar -C console/build/libs/ .
+
       - name: Create Release 🚀
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.date.outputs.date }}
           name: ${{ steps.date.outputs.date }}
-          files: console/build/libs/*
+          files: console/build/console.tar
