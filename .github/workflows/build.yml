@@ -1,0 +1,33 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v6
+
+      - name: Setup Java 📦
+        uses: actions/setup-java@v5
+        with:
+          java-version: "8"
+          distribution: microsoft
+          cache: gradle
+
+      - name: Build 🚚
+        run: ./gradlew build
+
+      - name: Upload Build Artifacts 📤
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-artifacts
+          path: build/
