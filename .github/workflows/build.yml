@@ -24,18 +24,30 @@ jobs:
           cache: gradle
 
       - name: Build 🚚
-        run: ./gradlew :portugol-console:build
+        run: ./gradlew :portugol-console:build :portugol-analisador:build
 
       - name: Generate Release Date 📅
         id: date
         run: echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_OUTPUT
 
       - name: Compress Artifacts 🗜️
-        run: tar -cf console/build/console.tar -C console/build/libs/ .
+        run: |
+          # O console e o analisador dependem só do portugol-core, então o `lib/` dos
+          # dois é o mesmo e vai uma vez só no tar. Isso é uma invariante implícita: se
+          # um deles ganhar uma dependência que o outro não tem, mesclar escolheria uma
+          # das versões em silêncio — melhor falhar aqui.
+          diff -r console/build/libs/lib analisador/build/libs/lib
+
+          mkdir -p build/dist
+          cp -R console/build/libs/. build/dist/
+          cp analisador/build/libs/*.jar build/dist/
+          tar -cf build/portugol.tar -C build/dist .
 
       - name: Create Release 🚀
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.date.outputs.date }}
           name: ${{ steps.date.outputs.date }}
-          files: console/build/console.tar
+          files: |
+            build/portugol.tar
+            build/dist/*.jar
